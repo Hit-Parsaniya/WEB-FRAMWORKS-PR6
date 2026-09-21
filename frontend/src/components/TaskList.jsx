@@ -1,79 +1,98 @@
-import { useState } from 'react';
+import React, { useState, memo } from 'react';
 
-export default function TaskList({ tasks, onUpdate, onDelete, pendingIds }) {
-  const [editingId, setEditingId] = useState(null);
-  const [editTitle, setEditTitle] = useState('');
+const TaskItem = memo(function TaskItem({
+  task,
+  isPending,
+  onUpdate,
+  onDelete
+}) {
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(task.title);
 
-  const startEdit = (task) => {
-    setEditingId(task._id);
-    setEditTitle(task.title);
-  };
-
-  const saveEdit = (task) => {
+  const handleSave = () => {
     if (!editTitle.trim()) return;
     onUpdate(task._id, { ...task, title: editTitle.trim() });
-    setEditingId(null);
+    setEditing(false);
   };
 
+  return (
+    <li className={`task-item ${isPending ? 'pending' : ''}`}>
+      <input
+        type="checkbox"
+        checked={task.completed}
+        onChange={() => onUpdate(task._id, { ...task, completed: !task.completed })}
+        disabled={isPending}
+      />
+
+      {editing ? (
+        <input
+          className="edit-input"
+          value={editTitle}
+          onChange={(e) => setEditTitle(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+          autoFocus
+        />
+      ) : (
+        <span className={`task-title ${task.completed ? 'completed' : ''}`}>
+          {task.title}
+        </span>
+      )}
+
+      <div className="task-actions">
+        {editing ? (
+          <>
+            <button className="btn btn-small" onClick={handleSave}>
+              Save
+            </button>
+            <button
+              className="btn btn-small btn-secondary"
+              onClick={() => {
+                setEditing(false);
+                setEditTitle(task.title);
+              }}
+            >
+              Cancel
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              className="btn btn-small"
+              onClick={() => setEditing(true)}
+              disabled={isPending}
+            >
+              Edit
+            </button>
+            <button
+              className="btn btn-small btn-danger"
+              onClick={() => onDelete(task._id)}
+              disabled={isPending}
+            >
+              Delete
+            </button>
+          </>
+        )}
+      </div>
+    </li>
+  );
+});
+
+export default function TaskList({ tasks, onUpdate, onDelete, pendingIds }) {
   if (tasks.length === 0) {
     return <p className="empty-state">No tasks yet. Add one above.</p>;
   }
 
   return (
     <ul className="task-list">
-      {tasks.map((task) => {
-        const isPending = pendingIds.has(task._id);
-        return (
-          <li key={task._id} className={`task-item ${isPending ? 'pending' : ''}`}>
-            <input
-              type="checkbox"
-              checked={task.completed}
-              onChange={() => onUpdate(task._id, { ...task, completed: !task.completed })}
-              disabled={isPending}
-            />
-
-            {editingId === task._id ? (
-              <input
-                className="edit-input"
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && saveEdit(task)}
-                autoFocus
-              />
-            ) : (
-              <span className={`task-title ${task.completed ? 'completed' : ''}`}>
-                {task.title}
-              </span>
-            )}
-
-            <div className="task-actions">
-              {editingId === task._id ? (
-                <>
-                  <button className="btn btn-small" onClick={() => saveEdit(task)}>
-                    Save
-                  </button>
-                  <button className="btn btn-small btn-secondary" onClick={() => setEditingId(null)}>
-                    Cancel
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button className="btn btn-small" onClick={() => startEdit(task)} disabled={isPending}>
-                    Edit
-                  </button>
-                  <button
-                    className="btn btn-small btn-danger"
-                    onClick={() => onDelete(task._id)}
-                    disabled={isPending}
-                  >
-                    Delete
-                  </button>
-                </>
-              )}
-            </div>
-          </li>
-        );
-      })}
+      {tasks.map((task) => (
+        <TaskItem
+          key={task._id}
+          task={task}
+          isPending={pendingIds.has(task._id)}
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+        />
+      ))}
     </ul>
   );
 }
