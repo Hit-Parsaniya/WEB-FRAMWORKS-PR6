@@ -22,7 +22,7 @@ function NavigationHeader() {
   return (
     <header className="navbar">
       <div className="navbar-brand">
-        <h1>PR8 — Task Manager</h1>
+        <h1>PR10 — Event-Driven Task Manager</h1>
         <span className="user-badge">{user?.email}</span>
       </div>
       <nav className="nav-links">
@@ -81,7 +81,7 @@ function AppContent() {
   if (!isAuthenticated) {
     return (
       <div className="app app-narrow">
-        <h1>PR8 — Task Manager</h1>
+        <h1>PR10 — Event-Driven Task Manager</h1>
         <p className="subtitle">Register or log in to manage your tasks</p>
         <AuthForm
           initialMessage={sessionExpired ? 'Your session expired. Please log in again.' : null}

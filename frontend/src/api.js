@@ -38,3 +38,18 @@ export const deleteTask = (id) =>
   fetch(`${BASE_URL}/tasks/${id}`, {
     method: 'DELETE',
   }).then(handleResponse);
+
+// --- Practical 10: Event-Driven Processing Endpoints ---
+
+export const getEventLogs = () =>
+  fetch(`${BASE_URL}/tasks/debug/events`, {
+    headers: { ...authHeaders() },
+  }).then(handleResponse);
+
+export const simulateErrorEvent = (title) =>
+  fetch(`${BASE_URL}/tasks/simulate-error`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ title: title || 'Simulated Error Task' }),
+  }).then(handleResponse);
+

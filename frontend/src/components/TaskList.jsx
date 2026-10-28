@@ -33,9 +33,17 @@ const TaskItem = memo(function TaskItem({
           autoFocus
         />
       ) : (
-        <span className={`task-title ${task.completed ? 'completed' : ''}`}>
-          {task.title}
-        </span>
+        <div className="task-content">
+          <span className={`task-title ${task.completed ? 'completed' : ''}`}>
+            {task.title}
+          </span>
+          {task.description && (
+            <span className="task-desc">{task.description}</span>
+          )}
+          <span className="task-assigned-badge">
+            👤 {task.assignedUser || 'admin@example.com'}
+          </span>
+        </div>
       )}
 
       <div className="task-actions">

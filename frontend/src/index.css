@@ -447,3 +447,158 @@ h1 {
 .toast-error {
   background: #dc2626;
 }
+
+/* --- PR10 Event-Driven Architecture UI Styles --- */
+.task-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.task-desc {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.task-assigned-badge {
+  display: inline-block;
+  font-size: 11px;
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 2px 8px;
+  border-radius: 12px;
+  width: fit-content;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.events-panel {
+  margin-top: 32px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.events-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.events-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.events-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.timing-summary-banner {
+  background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+  border-left: 4px solid #3b82f6;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #1e3a8a;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.timing-summary-banner strong {
+  color: #1d4ed8;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.event-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.event-card:hover {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.event-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-tag {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.event-tag.task-created {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.event-tag.task-deleted {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.event-tag.error {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.event-timestamps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: white;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+.ts-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.ts-label {
+  color: #64748b;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-family: sans-serif;
+  font-weight: 600;
+}
+

@@ -13,23 +13,40 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/pr6_tasks'
 app.use(cors());
 app.use(express.json());
 
+// --- Initialize Event Listeners for Asynchronous Processing (Practical 10) ---
+require('./listeners');
+
 // --- Routes ---
 app.use('/tasks', taskRoutes);
 
 app.get('/', (req, res) => {
-  res.json({ status: 'PR6 backend running' });
+  res.json({
+    status: 'PR10 backend running',
+    message: 'Practical 10: Asynchronous Processing with Event-Driven Architecture',
+  });
 });
 
 // --- MongoDB connection + server start ---
-mongoose
-  .connect(MONGO_URI)
-  .then(() => {
-    console.log('MongoDB connected');
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err.message);
-    process.exit(1);
+async function startServer() {
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log(`MongoDB connected (${MONGO_URI.includes('mongodb+srv') ? 'Atlas' : 'Local'})`);
+  } catch (err) {
+    console.warn(`Primary MongoDB connection failed (${err.message}). Attempting local fallback...`);
+    try {
+      await mongoose.connect('mongodb://127.0.0.1:27017/pr10_tasks');
+      console.log('MongoDB connected to local instance: mongodb://127.0.0.1:27017/pr10_tasks');
+    } catch (fallbackErr) {
+      console.error('All MongoDB connection attempts failed:', fallbackErr.message);
+      process.exit(1);
+    }
+  }
+
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Practical 10 Event-Driven Notification System initialized.`);
   });
+}
+
+startServer();
+

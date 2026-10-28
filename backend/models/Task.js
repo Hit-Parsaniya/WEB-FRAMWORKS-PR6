@@ -16,6 +16,11 @@ const taskSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    assignedUser: {
+      type: String,
+      trim: true,
+      default: 'admin@example.com',
+    },
   },
   { timestamps: true }
 );
