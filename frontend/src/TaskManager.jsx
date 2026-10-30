@@ -140,9 +140,9 @@ export default function TaskManager() {
     <div className="app">
       <div className="app-header">
         <div>
-          <h1>PR10 — Event-Driven Task Manager</h1>
+          <h1>PR11 — Containerized Task Manager</h1>
           <p className="subtitle">
-            Logged in as {user?.email || '...'} · Node.js EventEmitter Processing
+            Logged in as {user?.email || '...'} · Docker Compose Orchestration (Frontend + Backend + MongoDB)
           </p>
         </div>
         <button className="btn btn-secondary" onClick={logout}>

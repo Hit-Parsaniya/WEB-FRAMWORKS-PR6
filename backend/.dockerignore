@@ -1,0 +1,15 @@
+# Exclude dependencies (avoid host OS binary incompatibility & bloated build context)
+node_modules
+npm-debug.log*
+
+# Exclude sensitive environment secrets
+.env
+.env.local
+.env.*.local
+
+# Exclude git & test caches
+.git
+.gitignore
+*.log
+.DS_Store
+Thumbs.db

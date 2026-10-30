@@ -1,0 +1,16 @@
+# Exclude host node_modules to avoid cross-platform binary conflicts
+node_modules
+dist
+npm-debug.log*
+
+# Exclude sensitive environment secrets
+.env
+.env.local
+.env.*.local
+
+# Exclude git repository & cache artifacts
+.git
+.gitignore
+*.log
+.DS_Store
+Thumbs.db

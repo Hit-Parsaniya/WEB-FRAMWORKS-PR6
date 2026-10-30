@@ -1,0 +1,12 @@
+# Ignore dependencies and build artifacts from root context
+**/node_modules
+**/dist
+**/build
+**/.env
+**/.env.*
+!**/.env.example
+*.log
+.git
+.gitignore
+.DS_Store
+Thumbs.db

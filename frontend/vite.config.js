@@ -5,6 +5,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    host: true, // Listen on all network interfaces (0.0.0.0) for Docker support
+  },
+  preview: {
+    port: 5173,
+    host: true, // Listen on all network interfaces (0.0.0.0) on port 5173 for Docker preview
   },
   build: {
     chunkSizeWarningLimit: 600,

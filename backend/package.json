@@ -1,7 +1,7 @@
 {
-  "name": "pr10-backend",
+  "name": "pr11-backend",
   "version": "1.0.0",
-  "description": "Practical 10 - Asynchronous Processing with Event-Driven Architecture",
+  "description": "Practical 11 - Containerization with Docker and Docker Compose",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,9 +9,11 @@
     "test:events": "node test-events.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.0",
     "node-cache": "^5.1.2"
   },
