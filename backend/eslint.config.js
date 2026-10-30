@@ -18,6 +18,7 @@ module.exports = [
         clearImmediate: 'readonly',
         URL: 'readonly',
         Buffer: 'readonly',
+        fetch: 'readonly',
         __dirname: 'readonly',
         __filename: 'readonly',
         describe: 'readonly',

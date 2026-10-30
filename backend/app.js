@@ -4,6 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const taskRoutes = require('./routes/tasks');
 const authRoutes = require('./routes/auth');
+const aiRoutes = require('./routes/ai');
 
 // Fallback JWT secret for containerized/lab environments
 if (!process.env.JWT_SECRET) {
@@ -26,6 +27,8 @@ require('./listeners');
 // --- Routes ---
 app.use('/auth', authRoutes);
 app.use('/tasks', taskRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/tasks/ai', aiRoutes);
 
 // Health check endpoint for Docker Compose / container monitoring
 app.get('/health', (req, res) => {

@@ -45,7 +45,7 @@ describe('Practical 12 - CI/CD Pipeline API Test Suite', () => {
       .get('/tasks')
       .set('Authorization', `Bearer ${validToken}`);
 
-    expect(res.statusCode).toBe(500);
+    expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThan(0);
     expect(res.body[0]).toHaveProperty('title');
@@ -57,7 +57,7 @@ describe('Practical 12 - CI/CD Pipeline API Test Suite', () => {
   test('GET / returns 200 with backend metadata', async () => {
     const res = await request(app).get('/');
 
-    expect(res.statusCode).toBe(500);
+    expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('status');
     expect(res.body).toHaveProperty('message');
   });
@@ -94,4 +94,45 @@ describe('Practical 12 - CI/CD Pipeline API Test Suite', () => {
     expect(res.statusCode).toBe(400);
     expect(res.body).toHaveProperty('message');
   });
+
+  // -------------------------------------------------------------
+  // Test 6 (Practical 13): POST /api/ai/generate-description returns 200 and description
+  // -------------------------------------------------------------
+  test('POST /api/ai/generate-description returns description and graceful fallback metadata', async () => {
+    const res = await request(app)
+      .post('/api/ai/generate-description')
+      .send({ title: 'Deploy Docker containers to production' });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('description');
+    expect(typeof res.body.description).toBe('string');
+    expect(res.body.description.length).toBeGreaterThan(0);
+    expect(res.body).toHaveProperty('fallback');
+    expect(res.body).toHaveProperty('provider');
+    expect(res.body).toHaveProperty('disclaimer');
+  });
+
+  // -------------------------------------------------------------
+  // Test 7 (Practical 13): POST /api/ai/generate-description with empty title returns 400
+  // -------------------------------------------------------------
+  test('POST /api/ai/generate-description returns 400 when title is missing', async () => {
+    const res = await request(app)
+      .post('/api/ai/generate-description')
+      .send({ title: '   ' });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty('message');
+  });
+
+  // -------------------------------------------------------------
+  // Test 8 (Practical 13): GET /api/ai/status returns diagnostic status
+  // -------------------------------------------------------------
+  test('GET /api/ai/status returns diagnostic online status', async () => {
+    const res = await request(app).get('/api/ai/status');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('status', 'online');
+    expect(res.body).toHaveProperty('activeProvider');
+  });
 });
+

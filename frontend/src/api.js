@@ -97,3 +97,17 @@ export const simulateErrorEvent = (title) =>
 
 export const getSystemHealth = () =>
   fetch(`${BASE_URL}/health`).then(handleResponse);
+
+// --- Practical 13: AI Service Integration ---
+export const generateAiDescription = (title) =>
+  fetch(`${BASE_URL}/api/ai/generate-description`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ title }),
+  }).then(handleResponse);
+
+export const getAiStatus = () =>
+  fetch(`${BASE_URL}/api/ai/status`, {
+    headers: { ...authHeaders() },
+  }).then(handleResponse);
+
