@@ -1,0 +1,76 @@
+name: CI Pipeline
+
+# Trigger the workflow on:
+# 1. Direct pushes to the main branch
+# 2. Pull requests targeting the main branch (Supplementary Problem 2)
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ============================================================================
+  # Job 1: Linting (Supplementary Problem 1 - Runs before test job)
+  # Analyzes source code for stylistic errors, bugs, and undefined variables
+  # ============================================================================
+  lint:
+    name: Code Quality & Lint Check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js runtime (v18)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run ESLint
+        run: npm run lint
+
+  # ============================================================================
+  # Job 2: Build & Automated Test Execution (Core Objective)
+  # Executes Jest + Supertest test suite after linter passes
+  # ============================================================================
+  build-and-test:
+    name: Build & Run Automated Tests
+    runs-on: ubuntu-latest
+    needs: [lint] # Ensures lint job completes successfully before testing
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js runtime (v18)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies (npm install)
+        run: npm install
+
+      - name: Execute automated API test suite (npm test)
+        run: npm test
+
+      - name: Report CI Pipeline Status
+        if: always()
+        run: |
+          echo "=========================================="
+          echo " CI Pipeline Execution Completed"
+          echo " Job Status: ${{ job.status }}"
+          echo "=========================================="

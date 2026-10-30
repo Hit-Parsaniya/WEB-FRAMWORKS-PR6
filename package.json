@@ -1,0 +1,13 @@
+{
+  "name": "pr12-ci-cd-task-manager",
+  "version": "1.0.0",
+  "description": "Practical 12: CI/CD Pipeline with GitHub Actions",
+  "scripts": {
+    "test": "npm --prefix backend test",
+    "lint": "npm --prefix backend run lint",
+    "install:backend": "npm --prefix backend install",
+    "install:frontend": "npm --prefix frontend install",
+    "postinstall": "npm --prefix backend install"
+  },
+  "devDependencies": {}
+}

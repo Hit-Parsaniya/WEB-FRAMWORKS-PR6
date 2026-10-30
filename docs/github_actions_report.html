@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practical 12: GitHub Actions CI/CD Pipeline Dashboard</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --green: #238636;
+      --green-light: #2ea043;
+      --red: #da3633;
+      --red-light: #f85149;
+      --blue: #58a6ff;
+      --yellow: #d29922;
+      --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      padding: 30px;
+      line-height: 1.6;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+    .header-badge {
+      display: inline-block;
+      background: #1f6feb22;
+      color: var(--blue);
+      border: 1px solid #1f6feb;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    h1 { font-size: 1.8rem; margin-bottom: 8px; color: #f0f6fc; }
+    .subtitle { color: var(--text-muted); font-size: 1rem; }
+    
+    .tab-nav {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { background: #21262d; border-color: #8b949e; }
+    .tab-btn.active { background: #21262d; border-color: var(--blue); color: var(--blue); }
+
+    .run-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .run-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+    .run-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .badge-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .badge-passed { background: rgba(35, 134, 54, 0.2); color: #3fb950; border: 1px solid var(--green); }
+    .badge-failed { background: rgba(218, 54, 51, 0.2); color: #f85149; border: 1px solid var(--red); }
+
+    .workflow-graph {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: #0d1117;
+      padding: 20px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+    .node {
+      background: #21262d;
+      border: 1px solid var(--border);
+      padding: 12px 18px;
+      border-radius: 6px;
+      min-width: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .node.passed { border-left: 4px solid var(--green-light); }
+    .node.failed { border-left: 4px solid var(--red-light); }
+    .arrow { color: var(--text-muted); font-size: 1.4rem; font-weight: bold; }
+
+    .terminal {
+      background: #030712;
+      border: 1px solid #1f2937;
+      border-radius: 6px;
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    .step-title {
+      color: var(--blue);
+      font-weight: bold;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .t-green { color: #3fb950; }
+    .t-red { color: #f85149; }
+    .t-yellow { color: #d29922; }
+    .t-gray { color: #8b949e; }
+    .t-bold { font-weight: bold; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .info-box {
+      background: #21262d;
+      border: 1px solid var(--border);
+      padding: 16px;
+      border-radius: 6px;
+    }
+    .info-box h3 { font-size: 1rem; color: #f0f6fc; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="header-badge">ITUE301 Advanced Web Development Frameworks</span>
+      <h1>Practical 12: CI/CD Pipeline with GitHub Actions</h1>
+      <p class="subtitle">Evidence Dashboard & Pipeline Execution Visualizer (Step 5 Failed vs Step 6 Passed Runs)</p>
+    </header>
+
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchRun('passed')">
+        <span class="t-green">✔</span> Run #2: Fixed Pipeline (Passed)
+      </button>
+      <button class="tab-btn" onclick="switchRun('failed')">
+        <span class="t-red">✖</span> Run #1: Deliberate Test Failure (Failed)
+      </button>
+    </div>
+
+    <!-- PASSED RUN VIEW -->
+    <div id="view-passed" class="run-card">
+      <div class="run-header">
+        <div class="run-title">
+          <span>✔</span>
+          <span>Commit <code>08f4c21</code> - fix: correct GET /tasks assertion to restore passing CI</span>
+        </div>
+        <span class="badge-status badge-passed">All checks have passed (1m 18s)</span>
+      </div>
+
+      <h3 style="margin-bottom: 12px; font-size: 1rem; color: var(--text-muted);">Workflow Execution DAG (Dependency Graph)</h3>
+      <div class="workflow-graph">
+        <div class="node passed">
+          <div>
+            <strong>1. lint</strong><br>
+            <small class="t-gray">Code Quality Check</small>
+          </div>
+          <span class="t-green">✔ 18s</span>
+        </div>
+        <div class="arrow">➔</div>
+        <div class="node passed">
+          <div>
+            <strong>2. build-and-test</strong><br>
+            <small class="t-gray">Jest Automated Tests</small>
+          </div>
+          <span class="t-green">✔ 42s</span>
+        </div>
+        <div class="arrow">➔</div>
+        <div class="node passed">
+          <div>
+            <strong>Report Status</strong><br>
+            <small class="t-gray">GitHub Checkmark</small>
+          </div>
+          <span class="t-green">SUCCESS</span>
+        </div>
+      </div>
+
+      <div class="terminal">
+<span class="step-title">▶ Run npm test (Jest Test Suite Output)</span>
+<span class="t-green">PASS</span> tests/api.test.js
+  <span class="t-bold">Practical 12 - CI/CD Pipeline API Test Suite</span>
+    <span class="t-green">√</span> GET /tasks returns 200 with task list (98 ms)
+    <span class="t-green">√</span> GET / returns 200 with backend metadata (10 ms)
+    <span class="t-green">√</span> GET /tasks returns 401 when Authorization token is missing (10 ms)
+    <span class="t-green">√</span> GET /health returns health metrics structure (7 ms)
+    <span class="t-green">√</span> POST /auth/register returns 400 when payload is invalid (16 ms)
+
+Test Suites: <span class="t-green t-bold">1 passed</span>, 1 total
+Tests:       <span class="t-green t-bold">5 passed</span>, 5 total
+Snapshots:   0 total
+Time:        1.004 s, estimated 2 s
+Ran all test suites.
+
+<span class="t-green">==========================================</span>
+<span class="t-green"> CI Pipeline Execution Completed</span>
+<span class="t-green"> Job Status: success</span>
+<span class="t-green">==========================================</span>
+      </div>
+    </div>
+
+    <!-- FAILED RUN VIEW -->
+    <div id="view-failed" class="run-card" style="display: none;">
+      <div class="run-header">
+        <div class="run-title">
+          <span class="t-red">✖</span>
+          <span>Commit <code>a91e57b</code> - test: deliberately break GET /tasks assertion for CI failure demo</span>
+        </div>
+        <span class="badge-status badge-failed">1 workflow check failed (54s)</span>
+      </div>
+
+      <h3 style="margin-bottom: 12px; font-size: 1rem; color: var(--text-muted);">Workflow Execution DAG (Dependency Graph)</h3>
+      <div class="workflow-graph">
+        <div class="node passed">
+          <div>
+            <strong>1. lint</strong><br>
+            <small class="t-gray">Code Quality Check</small>
+          </div>
+          <span class="t-green">✔ 17s</span>
+        </div>
+        <div class="arrow">➔</div>
+        <div class="node failed">
+          <div>
+            <strong>2. build-and-test</strong><br>
+            <small class="t-gray">Jest Automated Tests</small>
+          </div>
+          <span class="t-red">✖ FAILED</span>
+        </div>
+        <div class="arrow">➔</div>
+        <div class="node failed">
+          <div>
+            <strong>Report Status</strong><br>
+            <small class="t-gray">GitHub Red Cross</small>
+          </div>
+          <span class="t-red">FAILURE</span>
+        </div>
+      </div>
+
+      <div class="terminal">
+<span class="step-title t-red">✖ Run npm test (Failing Step)</span>
+<span class="t-red">FAIL</span> tests/api.test.js
+  Practical 12 - CI/CD Pipeline API Test Suite
+    <span class="t-red">×</span> GET /tasks returns 200 with task list (90 ms)
+    <span class="t-green">√</span> GET / returns 200 with backend metadata (11 ms)
+    <span class="t-green">√</span> GET /tasks returns 401 when Authorization token is missing (11 ms)
+    <span class="t-green">√</span> GET /health returns health metrics structure (10 ms)
+    <span class="t-green">√</span> POST /auth/register returns 400 when payload is invalid (20 ms)
+
+  ● Practical 12 - CI/CD Pipeline API Test Suite › GET /tasks returns 200 with task list
+
+    <span class="t-bold">expect(received).toBe(expected) // Object.is equality</span>
+
+    <span class="t-red">Expected: 500</span>
+    <span class="t-green">Received: 200</span>
+
+      48 |     // DELIBERATE TEST FAILURE FOR PRACTICAL 12 STEP 5 DEMONSTRATION:
+      49 |     // Changing expected status code from 200 to 500 causes Jest assertion failure
+    > 50 |     <span class="t-red">expect(res.statusCode).toBe(500);</span>
+         |                            ^
+      51 |     expect(Array.isArray(res.body)).toBe(true);
+      52 |     expect(res.body.length).toBeGreaterThan(0);
+      53 |     expect(res.body[0]).toHaveProperty('title');
+
+      at Object.toBe (tests/api.test.js:50:28)
+
+Test Suites: <span class="t-red t-bold">1 failed</span>, 1 total
+Tests:       <span class="t-red t-bold">1 failed</span>, <span class="t-green">4 passed</span>, 5 total
+Snapshots:   0 total
+Time:        1.025 s
+Error: Process completed with exit code 1.
+      </div>
+    </div>
+
+    <!-- SUMMARY GRID -->
+    <div class="grid-2">
+      <div class="info-box">
+        <h3>🔍 Continuous Integration vs Deployment</h3>
+        <p>This practical showcases <strong>Continuous Integration (CI)</strong>: automatic code checkout, dependency provisioning, static analysis (ESLint), and automated regression testing upon code commits. It protects the <code>main</code> branch from regressions before deployment.</p>
+      </div>
+      <div class="info-box">
+        <h3>🛡️ Diagnostic Analysis: Assertion Failure vs Path Error</h3>
+        <p>Both errors result in exit code 1 at the <code>npm test</code> step. However, a <strong>genuine assertion failure</strong> executes test cases and reports expected vs received values. A <strong>wrong path error</strong> fails prematurely during runner discovery with <code>No tests found</code> without running any assertions.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchRun(type) {
+      const btns = document.querySelectorAll('.tab-btn');
+      btns.forEach(b => b.classList.remove('active'));
+      if (type === 'passed') {
+        btns[0].classList.add('active');
+        document.getElementById('view-passed').style.display = 'block';
+        document.getElementById('view-failed').style.display = 'none';
+      } else {
+        btns[1].classList.add('active');
+        document.getElementById('view-passed').style.display = 'none';
+        document.getElementById('view-failed').style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>

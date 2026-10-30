@@ -5,7 +5,7 @@ const cache = require('../cache');
 const auth = require('../middleware/auth');
 const { validateTask } = require('../middleware/validate');
 const taskEvents = require('../events');
-const { getEventHistory, clearEventHistory } = require('../listeners');
+const { getEventHistory } = require('../listeners');
 
 // Every route below requires a valid JWT (Authorization: Bearer <token>).
 router.use(auth);

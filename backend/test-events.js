@@ -65,7 +65,7 @@ async function runTests() {
   try {
     const health = await request('/');
     console.log(`      Backend status: ${health.data.status || 'OK'} (HTTP ${health.status})\n`);
-  } catch (err) {
+  } catch (_err) {
     console.error('      ERROR: Backend server is not running on port 5000!');
     console.error('      Please run "npm run dev" or "node server.js" first.');
     process.exit(1);
