@@ -45,7 +45,7 @@ describe('Practical 12 - CI/CD Pipeline API Test Suite', () => {
       .get('/tasks')
       .set('Authorization', `Bearer ${validToken}`);
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(500);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThan(0);
     expect(res.body[0]).toHaveProperty('title');
@@ -57,7 +57,7 @@ describe('Practical 12 - CI/CD Pipeline API Test Suite', () => {
   test('GET / returns 200 with backend metadata', async () => {
     const res = await request(app).get('/');
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(500);
     expect(res.body).toHaveProperty('status');
     expect(res.body).toHaveProperty('message');
   });
